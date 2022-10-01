@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    const BASE_URL = "https://api.wordnik.com/v4/words.json/";
+    const API_KEY = "a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+    const URL_ACTION = {
+        randomWord: "randomWord",
+        randomWords: "randomWords",
+        reverseDictionary: "reverseDictionary",
+        wordOfTheDay: "wordOfTheDay"
+    }
+
+    function getStringUrlParams (urlParams, action){
+        var stringUrlParams = BASE_URL + action + '?';
+        for (var key in urlParams){
+            stringUrlParams += key + "=" + urlParams[key] + '&';
+        };
+
+        return stringUrlParams += "api_key=" + API_KEY;
+    };
+
+    window.onload = function (){
+        var maxLimit = 5
+        var url = getStringUrlParams ({
+            hasDictionaryDef: true,
+            minCorpusCount: 0,
+            minLength: 5,
+            maxLength: 15,
+            limit: maxLimit,
+            }, URL_ACTION.randomWords
+        );
+        var newObject = new XMLHttpRequest();
+        newObject.open("GET", url, false);
+        newObject.send();
+
+        if (newObject.status == 200){
+           var dataJson = JSON.parse(newObject.responseText);
+           var index = Math.floor(Math.random() * (maxLimit - 1));
+           var randomWord = dataJson[index].word;
+        };
+        
+        console.log(randomWord);
+    }
+    // заменить переменную word на переменную с выбранным рандомным словом
+    var words = [
+        'программа',
+        'макака',
+        'прекрасный',
+        'оладушек'
+    ];
+    var word = words[Math.floor(Math.random() * words.length)];
+    var answerArray = [];
+    for (var i = 0; i < word.length; i++){
+        answerArray[i] = "_";
+    };
+
+    var remainingLetters = word.length;
+
+    while (remainingLetters > 0) {
+        alert(answerArray.join(" "));
+        var guess = prompt("Угадайте букву или нажмите Отмена для выхода из игры.");
+        if (guess === null) {
+            break;
+        } else if (guess.length !== 1) {
+            alert("Пожалуйста, введите одиночную букву");
+        } else {
+            for (var j = 0; j < word.length; j++) {
+                if (word[j] === guess) {
+                    answerArray[j] = guess;
+                    remainingLetters--;
+                }
+            }
+        }
+    }
+
+    alert(answerArray.join(""));
+    alert("Отлично! Было загадано слово " + word);
+    
+</script>
+</html>
